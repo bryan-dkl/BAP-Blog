@@ -1,0 +1,48 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Tags from '../../components/Tags.astro';
+import { getPosts, formatDate, type Post } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts(); // newest first
+  return posts.map((post, i) => ({
+    params: { id: post.id },
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+
+interface Props {
+  post: Post;
+  newer?: Post;
+  older?: Post;
+}
+
+const { post, newer, older } = Astro.props;
+const { title, date, description, pillars, types, authors, draft } = post.data;
+const { Content } = await render(post);
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="post">
+    <header class="post__header">
+      <a href={baseUrl} class="back-link">← All posts</a>
+      <h1>{title} {draft && <span class="draft-badge">draft</span>}</h1>
+      <p class="post__meta">
+        <time datetime={date.toISOString()}>{formatDate(date)}</time>
+        {authors.length > 0 && <span> · by {authors.join(', ')}</span>}
+      </p>
+      <Tags pillars={pillars} types={types} linked />
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+
+  <nav class="post-nav" aria-label="More posts">
+    {older ? <a href={`${baseUrl}blog/${older.id}/`}>← {older.data.title}</a> : <span></span>}
+    {newer && <a href={`${baseUrl}blog/${newer.id}/`}>{newer.data.title} →</a>}
+  </nav>
+</BaseLayout>

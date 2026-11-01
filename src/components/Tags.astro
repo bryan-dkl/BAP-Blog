@@ -1,0 +1,36 @@
+---
+import { PILLARS, POST_TYPES, type Pillar, type PostType } from '../data/taxonomy';
+
+interface Props {
+  pillars: Pillar[];
+  types?: PostType[];
+  /** Turn tags into links to the overview, pre-filtered. */
+  linked?: boolean;
+}
+
+const { pillars, types = [], linked = false } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+---
+
+<ul class="tags">
+  {pillars.map((p) => {
+    const Tag = linked ? 'a' : 'span';
+    return (
+      <li>
+        <Tag class="tag tag--pillar" style={`--tag-color: ${PILLARS[p].color}`} href={linked ? `${baseUrl}?pillar=${p}` : undefined}>
+          {PILLARS[p].label}
+        </Tag>
+      </li>
+    );
+  })}
+  {types.map((t) => {
+    const Tag = linked ? 'a' : 'span';
+    return (
+      <li>
+        <Tag class="tag tag--type" href={linked ? `${baseUrl}?type=${t}` : undefined}>
+          {POST_TYPES[t].label}
+        </Tag>
+      </li>
+    );
+  })}
+</ul>

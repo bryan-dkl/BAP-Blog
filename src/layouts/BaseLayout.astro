@@ -1,0 +1,49 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const siteTitle = 'BAP Blog';
+const { title, description = 'The making-of of our bachelor thesis.', noindex = false } = Astro.props;
+const pageTitle = title ? `${title} · ${siteTitle}` : siteTitle;
+const path = Astro.url.pathname;
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}favicon.svg`} />
+    <link rel="icon" href={`${baseUrl}favicon.ico`} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container site-header__inner">
+        <a href={baseUrl} class="site-title">{siteTitle}</a>
+        <nav aria-label="Main">
+          <a href={baseUrl} aria-current={path === '/' ? 'page' : undefined}>Overview</a>
+          {import.meta.env.DEV && (
+            <a href={`${baseUrl}new-post/`} aria-current={path.startsWith('/new-post') ? 'page' : undefined}>+ New post</a>
+          )}
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <slot />
+    </main>
+
+    <footer class="site-footer container">
+      <p>Bachelor thesis · Howest</p>
+    </footer>
+  </body>
+</html>

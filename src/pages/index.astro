@@ -1,16 +1,99 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FilterBar from '../components/FilterBar.astro';
+import PostCard from '../components/PostCard.astro';
+import { getPosts, groupByMonth } from '../lib/posts';
+
+const posts = await getPosts();
+const months = groupByMonth(posts);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout>
+  <section class="intro">
+    <h1>Our bachelor thesis, step by step</h1>
+    <p>
+      A chronological log of everything we build, test and learn — across development, UX and design.
+    </p>
+  </section>
+
+  <FilterBar />
+
+  <div class="timeline">
+    {months.map(({ label, posts }) => (
+      <section class="timeline__month" data-month>
+        <h2>{label}</h2>
+        <ul class="post-list">
+          {posts.map((post) => <PostCard post={post} />)}
+        </ul>
+      </section>
+    ))}
+  </div>
+
+  <p class="empty" id="empty-state" hidden>No posts match these filters.</p>
+  {posts.length === 0 && <p class="empty">No posts yet.</p>}
+</BaseLayout>
+
+<script>
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  const cards = [...document.querySelectorAll<HTMLElement>('.post-card')];
+  const months = [...document.querySelectorAll<HTMLElement>('[data-month]')];
+  const count = document.getElementById('filter-count')!;
+  const clear = document.getElementById('filter-clear')!;
+  const empty = document.getElementById('empty-state')!;
+
+  function selected(group: string): string[] {
+    return buttons
+      .filter((b) => b.dataset.filter === group && b.getAttribute('aria-pressed') === 'true')
+      .map((b) => b.dataset.value!);
+  }
+
+  function apply() {
+    const pillars = selected('pillar');
+    const types = selected('type');
+    let visible = 0;
+
+    for (const card of cards) {
+      const cardPillars = card.dataset.pillars!.split(' ');
+      const cardTypes = (card.dataset.types ?? '').split(' ').filter(Boolean);
+      const matchPillar = pillars.length === 0 || pillars.some((p) => cardPillars.includes(p));
+      const matchType = types.length === 0 || types.some((t) => cardTypes.includes(t));
+      card.hidden = !(matchPillar && matchType);
+      if (!card.hidden) visible++;
+    }
+
+    // Hide month headings that have no visible posts left.
+    for (const month of months) {
+      month.hidden = !month.querySelector('.post-card:not([hidden])');
+    }
+
+    const filtering = pillars.length > 0 || types.length > 0;
+    count.textContent = filtering ? `${visible} of ${cards.length} posts` : `${cards.length} posts`;
+    clear.hidden = !filtering;
+    empty.hidden = visible > 0 || cards.length === 0;
+
+    // Keep filters in the URL so a filtered view can be shared / linked from a tag.
+    const params = new URLSearchParams();
+    if (pillars.length) params.set('pillar', pillars.join(','));
+    if (types.length) params.set('type', types.join(','));
+    const query = params.toString();
+    history.replaceState(null, '', query ? `?${query}` : location.pathname);
+  }
+
+  // Restore filters from the URL (e.g. /?pillar=ux,design&type=meeting).
+  const params = new URLSearchParams(location.search);
+  for (const button of buttons) {
+    const values = params.get(button.dataset.filter!)?.split(',') ?? [];
+    button.setAttribute('aria-pressed', String(values.includes(button.dataset.value!)));
+    button.addEventListener('click', () => {
+      button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true'));
+      apply();
+    });
+  }
+
+  clear.addEventListener('click', () => {
+    buttons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+    apply();
+  });
+
+  apply();
+</script>

@@ -1,0 +1,37 @@
+---
+import { PILLARS, POST_TYPES, pillarKeys, postTypeKeys } from '../data/taxonomy';
+---
+
+<!--
+  Filter logic (see the script in pages/index.astro):
+  - within one group (e.g. Development + UX) a post matches if it has ANY of the selected values
+  - between groups (pillar + type) a post must match BOTH
+-->
+<section class="filters" aria-label="Filter posts">
+  <div class="filters__group">
+    <span class="filters__label" id="pillar-label">Pillars</span>
+    <div role="group" aria-labelledby="pillar-label">
+      {pillarKeys.map((key) => (
+        <button type="button" class="chip" data-filter="pillar" data-value={key} aria-pressed="false" style={`--tag-color: ${PILLARS[key].color}`}>
+          {PILLARS[key].label}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="filters__group">
+    <span class="filters__label" id="type-label">Type</span>
+    <div role="group" aria-labelledby="type-label">
+      {postTypeKeys.map((key) => (
+        <button type="button" class="chip" data-filter="type" data-value={key} aria-pressed="false">
+          {POST_TYPES[key].label}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="filters__status">
+    <span id="filter-count" aria-live="polite"></span>
+    <button type="button" class="link-button" id="filter-clear" hidden>Clear filters</button>
+  </div>
+</section>

@@ -1,0 +1,145 @@
+---
+// "Write a post" helper.
+// A static site can't save files by itself, so this page builds the Markdown file for you:
+// fill in the form → Download (or Copy) → put the file in src/content/blog/.
+// Prefer the terminal? Run `npm run new-post` instead — it creates the file directly.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PILLARS, POST_TYPES, pillarKeys, postTypeKeys } from '../data/taxonomy';
+
+const today = new Date().toISOString().slice(0, 10);
+---
+
+<BaseLayout title="New post" noindex>
+  <h1>New post</h1>
+  <p class="muted">
+    Fill this in, then download the file and drop it in <code>src/content/blog/</code>.
+    It shows up on the overview automatically.
+  </p>
+
+  <form id="post-form" class="post-form">
+    <label>
+      Title
+      <input name="title" required placeholder="e.g. First usability test with 5 students" />
+    </label>
+
+    <label>
+      Date
+      <input name="date" type="date" value={today} required />
+    </label>
+
+    <label>
+      Short description <span class="muted">(optional, shown on the overview)</span>
+      <input name="description" />
+    </label>
+
+    <fieldset>
+      <legend>Pillars <span class="muted">(at least one)</span></legend>
+      {pillarKeys.map((key) => (
+        <label class="check"><input type="checkbox" name="pillars" value={key} /> {PILLARS[key].label}</label>
+      ))}
+    </fieldset>
+
+    <fieldset>
+      <legend>Type <span class="muted">(optional)</span></legend>
+      {postTypeKeys.map((key) => (
+        <label class="check"><input type="checkbox" name="types" value={key} /> {POST_TYPES[key].label}</label>
+      ))}
+    </fieldset>
+
+    <label>
+      Authors <span class="muted">(comma separated)</span>
+      <input name="authors" placeholder="Bryan, ..." />
+    </label>
+
+    <label class="check"><input type="checkbox" name="draft" /> Save as draft (only visible in dev)</label>
+
+    <label>
+      Content <span class="muted">(Markdown)</span>
+      <textarea name="body" rows="12">## What we did
+
+## What we learned
+
+## Next steps
+</textarea>
+    </label>
+
+    <p class="form-error" id="form-error" hidden>Pick at least one pillar.</p>
+
+    <div class="form-actions">
+      <button type="submit" class="button">Download .md file</button>
+      <button type="button" class="button button--secondary" id="copy">Copy Markdown</button>
+    </div>
+  </form>
+
+  <h2>Preview of the file</h2>
+  <p class="muted">Filename: <code id="filename"></code></p>
+  <pre id="output"></pre>
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('post-form') as HTMLFormElement;
+  const output = document.getElementById('output')!;
+  const filenameEl = document.getElementById('filename')!;
+  const error = document.getElementById('form-error')!;
+
+  const slugify = (s: string) =>
+    s
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 60) || 'untitled';
+
+  const yamlString = (s: string) => JSON.stringify(s); // JSON strings are valid YAML strings
+  const yamlList = (items: string[]) => `[${items.map(yamlString).join(', ')}]`;
+
+  function build() {
+    const data = new FormData(form);
+    const title = String(data.get('title') ?? '').trim();
+    const date = String(data.get('date') ?? '');
+    const description = String(data.get('description') ?? '').trim();
+    const pillars = data.getAll('pillars').map(String);
+    const types = data.getAll('types').map(String);
+    const authors = String(data.get('authors') ?? '')
+      .split(',')
+      .map((a) => a.trim())
+      .filter(Boolean);
+
+    const lines = ['---', `title: ${yamlString(title || 'Untitled')}`, `date: ${date}`];
+    if (description) lines.push(`description: ${yamlString(description)}`);
+    lines.push(`pillars: ${yamlList(pillars)}`);
+    if (types.length) lines.push(`types: ${yamlList(types)}`);
+    if (authors.length) lines.push(`authors: ${yamlList(authors)}`);
+    if (data.get('draft')) lines.push('draft: true');
+    lines.push('---', '', String(data.get('body') ?? '').trim(), '');
+
+    const markdown = lines.join('\n');
+    const filename = `${date}-${slugify(title)}.md`;
+    output.textContent = markdown;
+    filenameEl.textContent = `src/content/blog/${filename}`;
+    return { markdown, filename, valid: pillars.length > 0 };
+  }
+
+  form.addEventListener('input', build);
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const { markdown, filename, valid } = build();
+    error.hidden = valid;
+    if (!valid) return;
+    const url = URL.createObjectURL(new Blob([markdown], { type: 'text/markdown' }));
+    const a = Object.assign(document.createElement('a'), { href: url, download: filename });
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('copy')!.addEventListener('click', async (e) => {
+    const button = e.currentTarget as HTMLButtonElement;
+    await navigator.clipboard.writeText(build().markdown);
+    button.textContent = 'Copied!';
+    setTimeout(() => (button.textContent = 'Copy Markdown'), 1500);
+  });
+
+  build();
+</script>
