@@ -44,11 +44,29 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 
 ## Writing a blog post
 
-Posts live in `src/content/blog/` as Markdown files (`YYYY-MM-DD-short-title.md`). Three ways to add one:
+The easiest way is the **editor**:
 
-1. **Terminal:** `npm run new-post` asks for title, pillars, etc. and creates the file (as a draft).
-2. **Browser:** run `npm run dev`, open `/new-post/`, fill in the form and download the `.md` file into `src/content/blog/`.
-3. **By hand:** copy `src/content/blog/_template.md`.
+1. `npm run dev`
+2. Open <http://localhost:4321/BAP-Blog/editor/> (or click **+ New post** in the menu)
+3. Fill in title, date, pillars, type, cover picture and write the post.
+   - **Pictures:** drag & drop, paste (screenshots!) or use the 🖼 Picture button. iPhone HEIC photos must be exported as JPG first.
+   - **Videos / PDFs / other files:** 📎 Video / file button.
+   - **YouTube, Vimeo, Figma:** ▶ Embed button.
+4. Click **Publish** (or **Save as draft**: only visible in `npm run dev`).
+5. To change a post: pick it in "Edit an existing post", or click **✎ Edit this post** on the post itself.
+
+Then commit + push like usual and GitHub Actions deploys it.
+
+Where things end up:
+
+| what              | where |
+|-------------------|-------|
+| the post          | `src/content/blog/YYYY-MM-DD-title.md` |
+| pictures + cover  | `src/assets/blog/<post-id>/` (Astro optimises them at build) |
+| videos / files    | `public/media/<post-id>/` |
+
+The editor only exists locally (it's a small dev-server add-on in `integrations/blog-editor.mjs`); the deployed site never contains it.
+Other ways: `npm run new-post` in the terminal, or copy `src/content/blog/_template.md`.
 
 Frontmatter fields:
 
@@ -59,6 +77,8 @@ Frontmatter fields:
 | `pillars`     | yes      | one or more of `development`, `ux`, `design` |
 | `types`       | no       | `experiment`, `research`, `feedback`, `meeting`, `milestone`, `reflection` |
 | `description` | no       | shown on the overview |
+| `cover`       | no       | `"../../assets/blog/<post-id>/cover.jpg"` |
+| `coverAlt`    | no       | description of the cover picture |
 | `authors`     | no       | list of names |
 | `draft`       | no       | `true` = only visible in `npm run dev` |
 
@@ -76,7 +96,10 @@ src/
 ├─ components/              # FilterBar, PostCard, Tags
 ├─ pages/index.astro        # chronological overview + filters
 ├─ pages/blog/[id].astro    # individual post (with previous/next)
-├─ pages/new-post.astro     # "write a post" form
-└─ styles/global.css
+├─ pages/editor.astro       # local editor (new + edit posts, pictures, files, embeds)
+├─ assets/blog/<post-id>/   # pictures per post
+└─ styles/                  # global.css + editor.css
+integrations/blog-editor.mjs # dev-only API that saves posts + uploads
+public/media/<post-id>/     # videos / files per post
 scripts/new-post.mjs        # `npm run new-post`
 ```
