@@ -1,18 +1,80 @@
 ---
 // Blog editor — write new posts or edit existing ones, with pictures, videos, files and embeds.
-// Only works with `npm run dev`: saving goes through the dev-server API in integrations/blog-editor.mjs,
-// which writes the .md file and uploads straight into the project. On the deployed site this page only shows a notice.
+//
+// - On the live site (GitHub Pages) it saves by committing to the GitHub repo with your own GitHub token.
+//   The commit triggers the deploy workflow, so the post is online 1–2 minutes later.
+// - With `npm run dev` it saves straight into your project folder (add ?mode=github to test the GitHub flow locally).
+//
+// The logic lives in src/lib/editor/.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { PILLARS, POST_TYPES, pillarKeys, postTypeKeys } from '../data/taxonomy';
+import { GITHUB } from '../data/github';
 
 const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const today = new Date().toISOString().slice(0, 10);
-const isDev = import.meta.env.DEV;
+const mode = import.meta.env.DEV ? 'local' : 'github';
+const repoUrl = `https://github.com/${GITHUB.owner}/${GITHUB.repo}`;
 ---
 
 <BaseLayout title="Editor" noindex>
-  {isDev ? (
-    <div class="editor" id="editor" data-base={baseUrl}>
+  <div
+    class="editor"
+    id="editor"
+    data-base={baseUrl}
+    data-mode={mode}
+    data-owner={GITHUB.owner}
+    data-repo={GITHUB.repo}
+    data-branch={GITHUB.branch}
+  >
+    <!-- Step 1 (live site only): connect with a GitHub token -->
+    <section class="connect" id="connect" hidden>
+      <h1>Write a post</h1>
+      <p>
+        New posts are saved straight to the
+        <a href={repoUrl} target="_blank" rel="noopener">{GITHUB.owner}/{GITHUB.repo}</a> repository, which then
+        rebuilds the site. To do that, connect once with your own GitHub token.
+      </p>
+
+      <details class="token-help">
+        <summary>How do I get a token?</summary>
+        <ol>
+          <li>
+            You need to be the owner or a collaborator of <strong>{GITHUB.owner}/{GITHUB.repo}</strong> (repo → Settings →
+            Collaborators).
+          </li>
+          <li>
+            <strong>Repo owner:</strong> create a
+            <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained token</a>
+            → Repository access: <em>Only select repositories</em> → {GITHUB.repo} → Permissions:
+            <em>Contents: Read and write</em>.
+          </li>
+          <li>
+            <strong>Collaborators:</strong> create a
+            <a href="https://github.com/settings/tokens/new?scopes=public_repo&description=BAP-Blog%20editor" target="_blank" rel="noopener">classic token</a>
+            with the <em>public_repo</em> scope (fine-grained tokens can't access other people's repos).
+          </li>
+          <li>Pick an expiration date (e.g. end of the school year), generate it and paste it below.</li>
+        </ol>
+        <p class="muted">
+          The token is only stored in this browser and only sent to GitHub. Never share it or commit it.
+        </p>
+      </details>
+
+      <form id="connect-form" class="post-form connect-form">
+        <label>
+          GitHub token
+          <input id="token-input" type="password" autocomplete="off" placeholder="github_pat_… or ghp_…" required />
+        </label>
+        <label class="check"><input type="checkbox" id="token-remember" checked /> Remember on this device</label>
+        <div class="form-actions">
+          <button type="submit" class="button">Connect</button>
+        </div>
+        <p class="form-status" id="connect-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- Step 2: the editor -->
+    <div id="workspace" hidden>
       <div class="editor-head">
         <h1 id="editor-title">New post</h1>
         <label class="editor-pick">
@@ -22,6 +84,14 @@ const isDev = import.meta.env.DEV;
           </select>
         </label>
       </div>
+
+      <p class="editor-bar" id="connected" hidden>
+        Saving to GitHub as <strong id="connected-user"></strong> ·
+        <button type="button" class="link-button" id="disconnect">Disconnect</button>
+      </p>
+      <p class="editor-bar muted" data-mode-only="local" hidden>
+        Local mode: saving writes into your project folder. Commit &amp; push to put it online.
+      </p>
 
       <form id="post-form" class="post-form" novalidate>
         <input type="hidden" name="id" />
@@ -68,7 +138,7 @@ const isDev = import.meta.env.DEV;
             <img id="cover-img" alt="" />
             <button type="button" class="link-button" id="cover-remove">Remove cover</button>
           </div>
-          <input type="file" name="cover" id="cover-input" accept=".jpg,.jpeg,.png,.webp,.gif,.avif,.svg" />
+          <input type="file" id="cover-input" accept=".jpg,.jpeg,.png,.webp,.gif,.avif,.svg" />
           <label class="grow">
             Cover description <span class="muted">(alt text)</span>
             <input name="coverAlt" placeholder="What's in the picture?" />
@@ -113,344 +183,12 @@ const isDev = import.meta.env.DEV;
         </div>
       </form>
     </div>
-  ) : (
-    <section class="intro">
-      <h1>Editor</h1>
-      <p>The editor only works locally. Run <code>npm run dev</code> and open <code>/editor/</code>.</p>
-    </section>
-  )}
+  </div>
 </BaseLayout>
 
 <script>
+  import { initEditor } from '../lib/editor/editor.js';
+
   const root = document.getElementById('editor');
   if (root) initEditor(root);
-
-  function initEditor(root: HTMLElement) {
-    const base = root.dataset.base!;
-    const api = `${base}__blog-editor/`;
-    const form = root.querySelector<HTMLFormElement>('#post-form')!;
-    const body = form.querySelector<HTMLTextAreaElement>('#body')!;
-    const status = root.querySelector<HTMLElement>('#status')!;
-    const picker = root.querySelector<HTMLSelectElement>('#post-picker')!;
-    const imageInput = root.querySelector<HTMLInputElement>('#image-input')!;
-    const fileInput = root.querySelector<HTMLInputElement>('#file-input')!;
-    const coverInput = root.querySelector<HTMLInputElement>('#cover-input')!;
-    const coverPreview = root.querySelector<HTMLElement>('#cover-preview')!;
-    const coverImg = root.querySelector<HTMLImageElement>('#cover-img')!;
-    const attachmentsBox = root.querySelector<HTMLElement>('#attachments')!;
-    const attachmentList = root.querySelector<HTMLUListElement>('#attachment-list')!;
-
-    const IMAGE_EXT = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'svg'];
-    const attachments = new Map<string, File>(); // key (= safe file name) → file
-    let dirty = false;
-
-    const input = (name: string) => form.elements.namedItem(name) as HTMLInputElement;
-    const ext = (name: string) => name.split('.').pop()!.toLowerCase();
-    const setStatus = (message: string, kind: 'ok' | 'error' | '' = '') => {
-      status.textContent = message;
-      status.dataset.kind = kind;
-    };
-
-    // ---------- load posts / edit mode ----------
-
-    const editId = new URLSearchParams(location.search).get('edit');
-
-    fetch(`${api}posts`)
-      .then((r) => r.json())
-      .then((posts: { id: string; title: string; date: string; draft: boolean }[]) => {
-        for (const post of posts) {
-          const option = new Option(`${post.date} · ${post.title}${post.draft ? ' (draft)' : ''}`, post.id);
-          picker.add(option);
-        }
-        picker.value = editId ?? '';
-      })
-      .catch(() => setStatus('Could not reach the editor API — is `npm run dev` running?', 'error'));
-
-    picker.addEventListener('change', () => {
-      if (dirty && !confirm('You have unsaved changes. Leave anyway?')) {
-        picker.value = editId ?? '';
-        return;
-      }
-      dirty = false;
-      location.search = picker.value ? `?edit=${encodeURIComponent(picker.value)}` : '';
-    });
-
-    if (editId) loadPost(editId);
-
-    async function loadPost(id: string) {
-      const res = await fetch(`${api}posts/${encodeURIComponent(id)}`);
-      const post = await res.json();
-      if (!res.ok) return setStatus(post.error, 'error');
-      const d = post.data;
-      root.querySelector('#editor-title')!.textContent = 'Edit post';
-      input('id').value = post.id;
-      input('title').value = d.title ?? '';
-      input('date').value = String(d.date ?? '').slice(0, 10);
-      input('description').value = d.description ?? '';
-      input('authors').value = (d.authors ?? []).join(', ');
-      input('coverAlt').value = d.coverAlt ?? '';
-      for (const box of form.querySelectorAll<HTMLInputElement>('input[name="pillars"], input[name="types"]')) {
-        box.checked = (d[box.name] ?? []).includes(box.value);
-      }
-      body.value = post.body ?? '';
-      if (post.coverPreview) showCover(post.coverPreview);
-      setStatus(d.draft ? 'This post is currently a draft.' : '');
-    }
-
-    // ---------- cover ----------
-
-    function showCover(src: string) {
-      coverImg.src = src;
-      coverPreview.hidden = false;
-    }
-
-    coverInput.addEventListener('change', () => {
-      const file = coverInput.files?.[0];
-      if (!file) return;
-      if (!IMAGE_EXT.includes(ext(file.name))) {
-        coverInput.value = '';
-        return setStatus(unsupportedMessage(file), 'error');
-      }
-      input('removeCover').value = '';
-      showCover(URL.createObjectURL(file));
-    });
-
-    root.querySelector('#cover-remove')!.addEventListener('click', () => {
-      coverInput.value = '';
-      coverPreview.hidden = true;
-      coverImg.removeAttribute('src');
-      input('removeCover').value = 'true';
-      dirty = true;
-    });
-
-    // ---------- markdown helpers ----------
-
-    function replaceSelection(text: string, selectFrom?: number, selectTo?: number) {
-      const start = body.selectionStart;
-      body.focus();
-      body.setRangeText(text, start, body.selectionEnd, 'end');
-      if (selectFrom !== undefined) body.setSelectionRange(start + selectFrom, start + (selectTo ?? selectFrom));
-      body.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-
-    function wrap(before: string, after: string, placeholder: string) {
-      const selected = body.value.slice(body.selectionStart, body.selectionEnd) || placeholder;
-      replaceSelection(before + selected + after, before.length, before.length + selected.length);
-    }
-
-    function prefixLines(prefix: (i: number) => string) {
-      // Extend the selection to whole lines.
-      const start = body.value.lastIndexOf('\n', body.selectionStart - 1) + 1;
-      let end = body.value.indexOf('\n', body.selectionEnd);
-      if (end === -1) end = body.value.length;
-      body.setSelectionRange(start, end);
-      const lines = body.value.slice(start, end).split('\n');
-      replaceSelection(lines.map((line, i) => prefix(i) + line).join('\n'));
-    }
-
-    /** Insert a block on its own lines. */
-    function insertBlock(text: string) {
-      const before = body.value.slice(0, body.selectionStart);
-      const lead = before === '' || before.endsWith('\n\n') ? '' : before.endsWith('\n') ? '\n' : '\n\n';
-      replaceSelection(`${lead}${text}\n\n`);
-    }
-
-    const actions: Record<string, () => void> = {
-      h2: () => prefixLines(() => '## '),
-      h3: () => prefixLines(() => '### '),
-      bold: () => wrap('**', '**', 'bold text'),
-      italic: () => wrap('_', '_', 'italic text'),
-      link: () => {
-        const selected = body.value.slice(body.selectionStart, body.selectionEnd) || 'link text';
-        const text = `[${selected}](https://)`;
-        replaceSelection(text, text.length - 9, text.length - 1);
-      },
-      ul: () => prefixLines(() => '- '),
-      ol: () => prefixLines((i) => `${i + 1}. `),
-      quote: () => prefixLines(() => '> '),
-      code: () => wrap('\n```\n', '\n```\n', 'code'),
-    };
-
-    root.querySelectorAll<HTMLButtonElement>('[data-md]').forEach((button) =>
-      button.addEventListener('click', () => actions[button.dataset.md!]()),
-    );
-
-    body.addEventListener('keydown', (e) => {
-      if (!(e.metaKey || e.ctrlKey)) return;
-      const key = { b: 'bold', i: 'italic', k: 'link' }[e.key.toLowerCase()];
-      if (key) {
-        e.preventDefault();
-        actions[key]();
-      }
-    });
-
-    // ---------- uploads ----------
-
-    function unsupportedMessage(file: File) {
-      return /\.(heic|heif)$/i.test(file.name)
-        ? `"${file.name}" is an iPhone HEIC photo — export it as JPG first (Photos → File → Export).`
-        : `"${file.name}" isn't a supported picture format (use jpg, png, webp, gif, avif or svg).`;
-    }
-
-    function safeKey(name: string) {
-      const extension = ext(name);
-      const stem = name
-        .slice(0, name.length - extension.length - 1)
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[̀-ͯ]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '') || 'file';
-      let key = `${stem}.${extension}`;
-      for (let n = 2; attachments.has(key); n++) key = `${stem}-${n}.${extension}`;
-      return key;
-    }
-
-    function addFiles(files: Iterable<File>, onlyImages = false) {
-      for (const file of files) {
-        const isImage = IMAGE_EXT.includes(ext(file.name));
-        if (!isImage && (onlyImages || file.type.startsWith('image/'))) {
-          setStatus(unsupportedMessage(file), 'error');
-          continue;
-        }
-        const key = safeKey(file.name);
-        attachments.set(key, file);
-        insertBlock(markdownFor(key, file, isImage));
-      }
-      renderAttachments();
-    }
-
-    function markdownFor(key: string, file: File, isImage: boolean) {
-      const src = `upload:${key}`;
-      if (isImage) return `![Describe the picture](${src})`;
-      if (file.type.startsWith('video/')) return `<video src="${src}" controls playsinline></video>`;
-      if (file.type.startsWith('audio/')) return `<audio src="${src}" controls></audio>`;
-      return `[📎 ${file.name}](${src})`;
-    }
-
-    function renderAttachments() {
-      attachmentList.replaceChildren();
-      for (const [key, file] of attachments) {
-        const li = document.createElement('li');
-        if (IMAGE_EXT.includes(ext(key))) {
-          const img = document.createElement('img');
-          img.src = URL.createObjectURL(file);
-          img.alt = '';
-          li.append(img);
-        } else {
-          const icon = document.createElement('span');
-          icon.className = 'attachment-icon';
-          icon.textContent = file.type.startsWith('video/') ? '🎬' : '📄';
-          li.append(icon);
-        }
-        const name = document.createElement('span');
-        name.className = 'attachment-name';
-        name.textContent = `${key} · ${(file.size / 1024 / 1024).toFixed(1)} MB`;
-        const remove = document.createElement('button');
-        remove.type = 'button';
-        remove.className = 'link-button';
-        remove.textContent = 'Remove';
-        remove.addEventListener('click', () => {
-          attachments.delete(key);
-          // Remove the line(s) that reference this upload.
-          body.value = body.value
-            .split('\n')
-            .filter((line) => !line.includes(`upload:${key}`))
-            .join('\n');
-          renderAttachments();
-        });
-        li.append(name, remove);
-        attachmentList.append(li);
-      }
-      attachmentsBox.hidden = attachments.size === 0;
-    }
-
-    root.querySelector('[data-action="image"]')!.addEventListener('click', () => imageInput.click());
-    root.querySelector('[data-action="file"]')!.addEventListener('click', () => fileInput.click());
-    imageInput.addEventListener('change', () => {
-      addFiles(imageInput.files ?? [], true);
-      imageInput.value = '';
-    });
-    fileInput.addEventListener('change', () => {
-      addFiles(fileInput.files ?? []);
-      fileInput.value = '';
-    });
-
-    body.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      body.classList.add('is-dragging');
-    });
-    body.addEventListener('dragleave', () => body.classList.remove('is-dragging'));
-    body.addEventListener('drop', (e) => {
-      if (!e.dataTransfer?.files.length) return;
-      e.preventDefault();
-      body.classList.remove('is-dragging');
-      addFiles(e.dataTransfer.files);
-    });
-    body.addEventListener('paste', (e) => {
-      const files = [...(e.clipboardData?.files ?? [])];
-      if (!files.length) return;
-      e.preventDefault();
-      // Pasted screenshots are all called "image.png" — give them a clearer name.
-      addFiles(files.map((f) => (f.name === 'image.png' ? new File([f], `screenshot-${Date.now()}.png`, { type: f.type }) : f)));
-    });
-
-    // ---------- embeds ----------
-
-    root.querySelector('[data-action="embed"]')!.addEventListener('click', () => {
-      const url = prompt('Paste a YouTube, Vimeo or Figma link:')?.trim();
-      if (!url) return;
-      insertBlock(embedFor(url));
-    });
-
-    function embedFor(url: string) {
-      const youtube = url.match(/(?:youtu\.be\/|[?&]v=|embed\/|shorts\/)([\w-]{11})/);
-      const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-      let src = '';
-      if (youtube) src = `https://www.youtube-nocookie.com/embed/${youtube[1]}`;
-      else if (vimeo) src = `https://player.vimeo.com/video/${vimeo[1]}`;
-      else if (/figma\.com\//.test(url)) src = `https://www.figma.com/embed?embed_host=share&url=${encodeURIComponent(url)}`;
-      if (!src) return `[${url}](${url})`;
-      return `<div class="embed"><iframe src="${src}" title="Embedded content" loading="lazy" allowfullscreen></iframe></div>`;
-    }
-
-    // ---------- save ----------
-
-    form.addEventListener('input', () => (dirty = true));
-    window.addEventListener('beforeunload', (e) => {
-      if (dirty) e.preventDefault();
-    });
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitter = (e as SubmitEvent).submitter as HTMLButtonElement | null;
-      const draft = submitter?.dataset.draft === 'true';
-
-      if (!input('title').value.trim()) return setStatus('Give your post a title.', 'error');
-      if (!form.querySelector('input[name="pillars"]:checked')) return setStatus('Pick at least one pillar.', 'error');
-
-      const data = new FormData(form);
-      data.set('draft', String(draft));
-      for (const [key, file] of attachments) {
-        if (body.value.includes(`upload:${key}`)) data.append('files', file, key);
-      }
-
-      const buttons = form.querySelectorAll<HTMLButtonElement>('button[type="submit"]');
-      buttons.forEach((b) => (b.disabled = true));
-      setStatus('Saving…');
-
-      try {
-        const res = await fetch(`${api}posts`, { method: 'POST', body: data });
-        const result = await res.json();
-        if (!res.ok) throw new Error(result.error);
-        dirty = false;
-        setStatus(draft ? 'Saved as draft ✓ Opening the post…' : 'Published ✓ Opening the post…', 'ok');
-        // Give Astro a moment to pick up the new file.
-        setTimeout(() => (location.href = result.url), 900);
-      } catch (error) {
-        setStatus(`Couldn't save: ${(error as Error).message}`, 'error');
-        buttons.forEach((b) => (b.disabled = false));
-      }
-    });
-  }
 </script>

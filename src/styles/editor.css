@@ -199,3 +199,38 @@
   opacity: 0.5;
   cursor: wait;
 }
+
+/* ---------- Editor: connect to GitHub ---------- */
+.connect {
+  max-width: 34rem;
+}
+.connect h1 {
+  margin-top: 0;
+}
+.token-help {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  margin-bottom: 1.5rem;
+}
+.token-help summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+.token-help ol {
+  padding-left: 1.25rem;
+}
+.token-help li + li {
+  margin-top: 0.4rem;
+}
+.connect-form {
+  margin-bottom: 0;
+}
+.editor-bar {
+  font-size: 0.875rem;
+  margin: -0.75rem 0 1.5rem;
+}
+.form-status a {
+  color: inherit;
+}

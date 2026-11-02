@@ -30,7 +30,7 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
     <header class="post__header">
       <div class="post__top">
         <a href={baseUrl} class="back-link">← All posts</a>
-        {import.meta.env.DEV && <a href={`${baseUrl}editor/?edit=${post.id}`} class="back-link">✎ Edit this post</a>}
+        <a href={`${baseUrl}editor/?edit=${post.id}`} class="back-link">✎ Edit this post</a>
       </div>
       <h1>{title} {draft && <span class="draft-badge">draft</span>}</h1>
       <p class="post__meta">

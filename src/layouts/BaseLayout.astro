@@ -32,9 +32,7 @@ const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.ur
         <a href={baseUrl} class="site-title">{siteTitle}</a>
         <nav aria-label="Main">
           <a href={baseUrl} aria-current={path === baseUrl ? 'page' : undefined}>Overview</a>
-          {import.meta.env.DEV && (
-            <a href={`${baseUrl}editor/`} aria-current={path.startsWith(`${baseUrl}editor/`) ? 'page' : undefined}>+ New post</a>
-          )}
+          <a href={`${baseUrl}editor/`} aria-current={path.startsWith(`${baseUrl}editor/`) ? 'page' : undefined}>+ New post</a>
         </nav>
       </div>
     </header>

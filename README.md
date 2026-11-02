@@ -44,18 +44,26 @@ Feel free to check [our documentation](https://docs.astro.build) or jump into ou
 
 ## Writing a blog post
 
-The easiest way is the **editor**:
+### On the live site (recommended)
 
-1. `npm run dev`
-2. Open <http://localhost:4321/BAP-Blog/editor/> (or click **+ New post** in the menu)
-3. Fill in title, date, pillars, type, cover picture and write the post.
-   - **Pictures:** drag & drop, paste (screenshots!) or use the 🖼 Picture button. iPhone HEIC photos must be exported as JPG first.
-   - **Videos / PDFs / other files:** 📎 Video / file button.
-   - **YouTube, Vimeo, Figma:** ▶ Embed button.
-4. Click **Publish** (or **Save as draft**: only visible in `npm run dev`).
-5. To change a post: pick it in "Edit an existing post", or click **✎ Edit this post** on the post itself.
+1. Go to <https://bryan-dkl.github.io/BAP-Blog/editor/> (or click **+ New post**).
+2. The first time, connect with your own GitHub token (the page explains how to make one):
+   - repo owner → fine-grained token, only the `BAP-Blog` repo, *Contents: Read and write*
+   - collaborators → classic token with the `public_repo` scope
+   The token is stored only in your browser.
+3. Write the post, add pictures (drag & drop / paste / 🖼), videos or files (📎) and embeds (▶ YouTube, Vimeo, Figma).
+4. **Publish** → the editor makes one commit on `main` with the post and its files.
+   That triggers the *Deploy to GitHub Pages* workflow; the post is online after ~1–2 minutes.
+5. To change a post: **✎ Edit this post** on the post, or pick it in "Edit an existing post".
 
-Then commit + push like usual and GitHub Actions deploys it.
+⚠️ Because the editor pushes to GitHub, run `git pull` before you work locally again.
+
+### Locally
+
+`npm run dev` → <http://localhost:4321/editor/>. Same editor, but saving writes straight into your project folder
+(commit & push yourself). Add `?mode=github` to the URL to test the GitHub flow locally.
+
+Other ways: `npm run new-post` in the terminal, or copy `src/content/blog/_template.md`.
 
 Where things end up:
 
@@ -63,10 +71,7 @@ Where things end up:
 |-------------------|-------|
 | the post          | `src/content/blog/YYYY-MM-DD-title.md` |
 | pictures + cover  | `src/assets/blog/<post-id>/` (Astro optimises them at build) |
-| videos / files    | `public/media/<post-id>/` |
-
-The editor only exists locally (it's a small dev-server add-on in `integrations/blog-editor.mjs`); the deployed site never contains it.
-Other ways: `npm run new-post` in the terminal, or copy `src/content/blog/_template.md`.
+| videos / files    | `public/media/<post-id>/` (max ~90 MB — put big videos on YouTube and embed them) |
 
 Frontmatter fields:
 
@@ -96,10 +101,12 @@ src/
 ├─ components/              # FilterBar, PostCard, Tags
 ├─ pages/index.astro        # chronological overview + filters
 ├─ pages/blog/[id].astro    # individual post (with previous/next)
-├─ pages/editor.astro       # local editor (new + edit posts, pictures, files, embeds)
+├─ pages/editor.astro       # the editor page (new + edit posts, pictures, files, embeds)
+├─ lib/editor/              # editor logic: GitHub + local saving, frontmatter helpers
+├─ data/github.ts           # which repo/branch the editor commits to
 ├─ assets/blog/<post-id>/   # pictures per post
 └─ styles/                  # global.css + editor.css
-integrations/blog-editor.mjs # dev-only API that saves posts + uploads
+integrations/blog-editor.mjs # local save API for `npm run dev`
 public/media/<post-id>/     # videos / files per post
 scripts/new-post.mjs        # `npm run new-post`
 ```
