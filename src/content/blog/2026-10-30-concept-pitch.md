@@ -1,6 +1,7 @@
 ---
 title: "Concept Pitch"
 date: 2026-10-30
+cover: "../../assets/blog/2026-10-30-concept-pitch/cover.png"
 pillars: ["ux"]
 types: ["milestone"]
 ---
