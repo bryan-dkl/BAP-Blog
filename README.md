@@ -91,6 +91,7 @@ Pillars and types are defined in `src/data/taxonomy.ts` — edit them there.
 
 ### Structure
 
+#test
 ```
 src/
 ├─ content.config.ts        # schema for posts (title, date, pillars, types, ...)
