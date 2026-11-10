@@ -1,6 +1,6 @@
 ---
 title: "First inital concept: Monster Run"
-date: 2026-11-10
+date: 2026-10-28
 description: "Our first concept"
 cover: "../../assets/blog/2026-11-10-first-inital-concept-monster-run/cover.png"
 pillars: ["ux"]
