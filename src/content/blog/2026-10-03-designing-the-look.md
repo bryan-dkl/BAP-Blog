@@ -1,6 +1,6 @@
 ---
-title: "Designing the look"
-date: 2026-10-03
+title: "Designing The Look"
+date: 2026-11-03
 description: "Focusing on the visual style, font, title,..."
 cover: "../../assets/blog/2026-10-03-designing-the-look/cover.png"
 pillars: ["design"]
