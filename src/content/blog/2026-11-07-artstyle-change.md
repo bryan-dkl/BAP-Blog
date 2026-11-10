@@ -5,7 +5,7 @@ description: "We changed our artstyle so our 3D world and illustrations would fi
 cover: "../../assets/blog/2026-11-07-artstyle-change/cover.png"
 pillars: ["design"]
 types: ["experiment"]
-authors: ["Bryan","Alexander","Walid"]
+authors: ["Walid"]
 ---
 
 We changed our styleboards so it fits better and makes a coherent artstyle.
