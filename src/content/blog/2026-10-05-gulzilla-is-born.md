@@ -1,6 +1,6 @@
 ---
 title: "Gulzilla is born"
-date: 2026-10-05
+date: 2026-11-05
 description: "Introducing the name 'Gulzilla', sketching and identity"
 cover: "../../assets/blog/2026-10-05-gulzilla-is-born/cover.png"
 pillars: ["ux","design"]
