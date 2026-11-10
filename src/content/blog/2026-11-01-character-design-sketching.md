@@ -5,8 +5,10 @@ description: "Sketching the monster for our game"
 cover: "../../assets/blog/2026-11-01-character-design-sketching/cover.jpg"
 pillars: ["design"]
 types: ["experiment"]
-authors: ["Bryan","Alexander","Walid"]
+authors: ["Walid"]
 ---
+
+We made sketches of how the monster would look like, explored several looks and feels.
 
 ![Describe the picture](../../assets/blog/2026-11-01-character-design-sketching/screenshot-1794318228913.png)
 
