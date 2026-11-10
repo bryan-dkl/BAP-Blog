@@ -8,10 +8,7 @@ authors: ["Bryan","Alexander","Walid"]
 ---
 
 Feedback:
-Tonen wat we gedaan hebben:
-Design
-Installatie
-mss al kijken naar bestaande infrastructuur enzo die al bestaat
-Unity
+
+Misschien al eens kijken naar bestaande infrastructuur die al bestaat
 Tegen volgende keer eens zien hoeveel vierkante meter dat we zouden nodig hebben
-ook beetje zien met de prototypes als da
+ook beetje zien met de prototypes.
