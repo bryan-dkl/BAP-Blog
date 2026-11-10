@@ -25,6 +25,7 @@ const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.ur
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
     <title>{pageTitle}</title>
+    <slot name="head" />
   </head>
   <body>
     <header class="site-header">
@@ -32,6 +33,7 @@ const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.ur
         <a href={baseUrl} class="site-title">{siteTitle}</a>
         <nav aria-label="Main">
           <a href={baseUrl} aria-current={path === baseUrl ? 'page' : undefined}>Overview</a>
+          <a href={`${baseUrl}team/`} aria-current={path.startsWith(`${baseUrl}team/`) ? 'page' : undefined}>Team</a>
           <a href={`${baseUrl}editor/`} aria-current={path.startsWith(`${baseUrl}editor/`) ? 'page' : undefined}>+ New post</a>
         </nav>
       </div>

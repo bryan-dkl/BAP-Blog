@@ -1,0 +1,386 @@
+---
+// Team page. Member text lives in src/data/team.ts, photos in src/assets/team/.
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { MEMBERS, TEAM } from '../data/team';
+import setupSketch from '../assets/blog/2026-10-30-concept-pitch/screenshot-1794318080749.png';
+import monsterSketch from '../assets/blog/2026-11-01-character-design-sketching/cover.jpg';
+
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+
+// Picks src/assets/team/<key>.jpg/png/webp/avif if it exists (any capitals, e.g. Walid.JPG),
+// otherwise the <key>.svg placeholder.
+const photos = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/team/*.{jpg,jpeg,png,webp,avif,svg,JPG,JPEG,PNG,WEBP,AVIF}',
+  { eager: true },
+);
+function photoFor(key: string) {
+  const matches = Object.entries(photos).filter(
+    ([path]) => path.split('/').pop()!.replace(/\.[^.]+$/, '').toLowerCase() === key.toLowerCase(),
+  );
+  return (matches.find(([path]) => !path.endsWith('.svg')) ?? matches[0])?.[1].default;
+}
+
+// Straight from our concept pitch.
+const principles = [
+  ['Nobody wins alone', 'The monster only moves if everyone does their part.'],
+  ['Understood in one look', 'You should get it within a few seconds of watching.'],
+  ['Failing is funny', 'When you miss, the monster trips. That should make you laugh, not feel bad.'],
+  ['Goofy, but not childish', 'Silly enough to laugh at, not so silly that a 12-year-old thinks it\'s for babies.'],
+  ['Timing beats strength', 'It\'s about rhythm, not force, so a 7-year-old can beat their dad.'],
+];
+---
+
+<BaseLayout title="Team" description={`${TEAM.name}: Walid, Bryan and Alexander, making ${TEAM.concept} for ${TEAM.client}.`}>
+  <link slot="head" rel="preconnect" href="https://fonts.googleapis.com" />
+  <link slot="head" rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link slot="head" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap" />
+
+  <section class="hero">
+    <svg class="paw" viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M14 14l4-10 4 12zM28 10l4-9 4 10zM42 14l4-10 4 12z" />
+      <ellipse cx="32" cy="40" rx="20" ry="18" />
+    </svg>
+    <p class="hero__eyebrow">Bachelor project for {TEAM.client}</p>
+    <h1>{TEAM.name}</h1>
+    <p class="hero__text">
+      We're Walid, Bryan and Alexander, three Howest students making <strong>{TEAM.concept}</strong>: a rhythm game
+      where a group of players controls one big monster together. This blog is where we keep track of what we try,
+      what works and what doesn't.
+    </p>
+  </section>
+
+  <section class="block">
+    <ul class="members">
+      {MEMBERS.map((member) => {
+        const photo = photoFor(member.photo);
+        return (
+          <li class="member" style={`--member-color: ${member.color}`}>
+            <div class="member__photo">
+              {photo && (
+                <Image
+                  src={photo}
+                  alt={member.name}
+                  width={320}
+                  height={320}
+                  fit="cover"
+                  sizes="(max-width: 600px) 60vw, 14rem"
+                />
+              )}
+            </div>
+            <h2>{member.name}</h2>
+            <p class="member__role">{member.role}</p>
+            <p>{member.bio}</p>
+          </li>
+        );
+      })}
+    </ul>
+
+    <p class="split">
+      Walid does the visuals and Alexander makes them 3D. Bryan leads the code, with Alexander helping out. UX we do
+      together: researching what kids between 6 and 12 like, brainstorming, the calls with our client and our coach,
+      and soon the first playtests.
+    </p>
+  </section>
+
+  <section class="block concept">
+    <h2 class="big-title">Monster Run</h2>
+    <p class="tagline">You are the monster <span>(together)</span>!</p>
+
+    <div class="concept__grid">
+      <div class="concept__text">
+        <p>
+          J.E.F asked us for a different kind of game experience with a link to film culture. Our answer is a rhythm
+          game for 2 or 4 players, a bit like Dance Dance Revolution or Guitar Hero, except you don't each play your
+          own character. Everyone controls one limb of the same monster, so he only walks if you keep the beat
+          together.
+        </p>
+        <p>
+          There are four inputs: two paw pads for the arms and two foot plates for the feet. Hit yours on the beat and
+          the monster stomps forward. Miss it and he trips over his own feet.
+        </p>
+      </div>
+      <figure class="tilted">
+        <Image src={monsterSketch} alt="Early sketches of the monster" width={640} widths={[320, 640, 960]} sizes="(max-width: 640px) 100vw, 18rem" />
+        <figcaption>First monster sketches</figcaption>
+      </figure>
+    </div>
+
+    <figure class="setup">
+      <Image
+        src={setupSketch}
+        alt="Sketch of the setup: a big screen, two paw pads on the sides and two foot plates on the floor"
+        width={728}
+        widths={[480, 728, 1456]}
+        sizes="(max-width: 760px) 100vw, 728px"
+      />
+      <figcaption>
+        The setup: a big screen with sound <span class="dot" style="background:#8DBE45"></span>, two paw pads
+        <span class="dot" style="background:#FF8A3D"></span> and two foot plates <span class="dot" style="background:#8CCBFF"></span>.
+      </figcaption>
+    </figure>
+
+    <div class="story">
+      <h3>Gulzilla's story</h3>
+      <p>
+        Our monster (working name Gulzilla, a nod to Godzilla) has been asleep in the water for ages, until he smells
+        hotdogs. Starving, he follows the smell straight through the city, flattening buildings with every step
+        without even noticing. Every hotdog stand he reaches closes right in front of him, which only makes him
+        hungrier and faster. When he finally finds the right one, the chef hands him 100 hotdogs and he falls asleep
+        again, happy. The next morning he finds out he destroyed that stand too. Time to find a new one.
+      </p>
+      <p class="story__note">
+        After our first call, J.E.F asked for a funnier backstory and a tutorial level, so both are on our list.
+      </p>
+    </div>
+
+    <h3 class="small-title">What we keep in mind</h3>
+    <ol class="principles">
+      {principles.map(([title, text]) => (
+        <li>
+          <strong>{title}.</strong> {text}
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <p class="outro">
+    Want to see how it's going? <a href={baseUrl}>Read the blog</a>.
+  </p>
+</BaseLayout>
+
+<style>
+  .hero,
+  .member,
+  .concept {
+    --ink: #2a2340;
+    --orange: #ff8a3d;
+    --green: #8dbe45;
+    --dark-green: #2e7d29;
+    --cream: #ffe9b8;
+    --display: 'Bagel Fat One', 'Arial Rounded MT Bold', system-ui, sans-serif;
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--orange);
+    color: var(--ink);
+    border-radius: 28px;
+    padding: 2.5rem 2rem 2.25rem;
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(3.25rem, 13vw, 6rem);
+    line-height: 0.9;
+    margin: 0.25rem 0 1.25rem;
+  }
+  .hero__eyebrow {
+    margin: 0;
+    font-weight: 600;
+  }
+  .hero__text {
+    max-width: 34rem;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  .paw {
+    position: absolute;
+    right: -0.5rem;
+    top: 1.25rem;
+    width: clamp(6rem, 22vw, 10rem);
+    fill: var(--ink);
+    opacity: 0.12;
+    transform: rotate(14deg);
+  }
+
+  .block {
+    margin-top: 3.5rem;
+  }
+
+  /* ---------- members ---------- */
+  .members {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 2.5rem 1.75rem;
+  }
+  .member__photo {
+    background: var(--member-color);
+    border-radius: 22px;
+    padding: 0.5rem;
+    transform: rotate(-2deg);
+    max-width: 14rem;
+  }
+  .member:nth-child(2) .member__photo {
+    transform: rotate(1.5deg);
+  }
+  .member:nth-child(3) .member__photo {
+    transform: rotate(-1deg);
+  }
+  .member__photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+  .member h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 1.45rem;
+    line-height: 1.1;
+    margin: 1.1rem 0 0.15rem;
+  }
+  .member__role {
+    margin: 0 0 0.6rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .member p:last-child {
+    margin: 0;
+  }
+  .split {
+    margin: 2.5rem 0 0;
+    font-size: 1.05rem;
+    max-width: 40rem;
+  }
+
+  /* ---------- concept ---------- */
+  .big-title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.5rem, 9vw, 4rem);
+    line-height: 0.95;
+    color: var(--dark-green);
+    margin: 0;
+  }
+  .tagline {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 0.5rem 0 1.5rem;
+  }
+  .tagline span {
+    color: var(--orange);
+  }
+  .concept__grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  .concept__text p:first-child {
+    margin-top: 0;
+  }
+  figure {
+    margin: 0;
+  }
+  figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+  }
+  figcaption {
+    font-size: 0.875rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+  }
+  .tilted {
+    transform: rotate(2deg);
+    background: #fff;
+    padding: 0.5rem 0.5rem 0.25rem;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 0.12);
+  }
+  .tilted figcaption {
+    color: #6b6b75;
+    text-align: center;
+  }
+  @media (max-width: 640px) {
+    .concept__grid {
+      grid-template-columns: 1fr;
+    }
+    .tilted {
+      max-width: 20rem;
+    }
+  }
+  .setup {
+    margin-top: 2.5rem;
+  }
+  .dot {
+    display: inline-block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    vertical-align: -0.05rem;
+  }
+
+  .story {
+    margin-top: 2.5rem;
+    background: var(--cream);
+    color: var(--ink);
+    border-radius: 24px;
+    padding: 1.75rem 2rem;
+  }
+  .story h3 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 1.6rem;
+    color: var(--dark-green);
+    margin: 0 0 0.75rem;
+  }
+  .story p {
+    margin: 0;
+  }
+  .story__note {
+    margin-top: 1rem !important;
+    font-size: 0.925rem;
+    opacity: 0.75;
+  }
+
+  .small-title {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 1.6rem;
+    color: var(--dark-green);
+    margin: 2.75rem 0 0.75rem;
+  }
+  .principles {
+    margin: 0;
+    padding-left: 1.4rem;
+    display: grid;
+    gap: 0.6rem;
+  }
+  .principles li::marker {
+    font-weight: 700;
+    color: var(--orange);
+  }
+
+  .outro {
+    margin-top: 3.5rem;
+    font-size: 1.1rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .big-title,
+    .small-title {
+      color: var(--green);
+    }
+  }
+  @media (max-width: 560px) {
+    .hero {
+      padding: 2rem 1.25rem 1.75rem;
+      border-radius: 22px;
+    }
+    .story {
+      padding: 1.5rem 1.25rem;
+    }
+  }
+</style>

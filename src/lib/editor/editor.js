@@ -18,6 +18,40 @@ import {
 
 const TOKEN_KEY = 'bap-blog-github-token';
 const MAX_FILE_MB = 90; // GitHub refuses files over 100 MB
+const MAX_IMAGE_SIDE = 2400; // px — bigger pictures are scaled down before uploading
+const RECOMPRESS_ABOVE = 1.5 * 1024 * 1024; // re-encode pictures above 1.5 MB even if they're not too big
+
+/**
+ * Makes big pictures smaller before they're uploaded (keeps the repo and the build light).
+ * The site itself is optimised again by Astro at build time; this only avoids storing 6 MB screenshots.
+ * Returns the original file when it's already small, can't be decoded, or the result isn't smaller.
+ */
+async function optimizeImage(file) {
+  if (!['jpg', 'jpeg', 'png', 'webp'].includes(extension(file.name)) || file.size < 400 * 1024) return file;
+  let bitmap;
+  try {
+    bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  } catch {
+    return file;
+  }
+  const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(bitmap.width, bitmap.height));
+  if (scale === 1 && file.size < RECOMPRESS_ABOVE) {
+    bitmap.close();
+    return file;
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  const encode = (type, quality) => new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+  let blob = await encode('image/webp', 0.88);
+  // Browsers that can't make WebP (older Safari) fall back to PNG; then only JPEG → JPEG is worth it.
+  if (blob?.type !== 'image/webp') blob = /jpe?g/.test(extension(file.name)) ? await encode('image/jpeg', 0.88) : null;
+  if (!blob || blob.size >= file.size) return file;
+  const stem = file.name.replace(/\.[^.]+$/, '');
+  return new File([blob], `${stem}.${blob.type === 'image/webp' ? 'webp' : 'jpg'}`, { type: blob.type });
+}
 
 const storage = {
   get() {
@@ -299,8 +333,11 @@ export function initEditor(root) {
       : `"${file.name}" isn't a supported picture format (use jpg, png, webp, gif, avif or svg).`;
   }
 
-  function addFiles(files, onlyImages = false) {
-    for (const file of files) {
+  async function addFiles(fileList, onlyImages = false) {
+    const files = [...fileList];
+    if (files.some((f) => isImage(f.name))) setStatus('Optimising pictures…');
+    for (const original of files) {
+      const file = isImage(original.name) ? await optimizeImage(original) : original;
       const image = isImage(file.name);
       if (!image && (onlyImages || file.type.startsWith('image/'))) {
         setStatus(unsupportedMessage(file), 'error');
@@ -314,6 +351,7 @@ export function initEditor(root) {
       attachments.set(key, file);
       insertBlock(markdownFor(key, file, image));
     }
+    if (status.textContent === 'Optimising pictures…') setStatus('');
     renderAttachments();
   }
 
@@ -365,12 +403,12 @@ export function initEditor(root) {
   const fileInput = $('#file-input');
   $('[data-action="image"]').addEventListener('click', () => imageInput.click());
   $('[data-action="file"]').addEventListener('click', () => fileInput.click());
-  imageInput.addEventListener('change', () => {
-    addFiles(imageInput.files ?? [], true);
+  imageInput.addEventListener('change', async () => {
+    await addFiles(imageInput.files ?? [], true);
     imageInput.value = '';
   });
-  fileInput.addEventListener('change', () => {
-    addFiles(fileInput.files ?? []);
+  fileInput.addEventListener('change', async () => {
+    await addFiles(fileInput.files ?? []);
     fileInput.value = '';
   });
 
@@ -515,7 +553,7 @@ export function initEditor(root) {
     if (missing) throw new EditorError(`"${missing[0]}" is used in the text but that file isn't attached anymore.`);
 
     let cover = existing.cover;
-    const coverFile = coverInput.files?.[0];
+    const coverFile = coverInput.files?.[0] ? await optimizeImage(coverInput.files[0]) : null;
     if (coverFile) cover = store(coverFile, `cover.${extension(coverFile.name)}`);
     else if (field('removeCover') === 'true') cover = undefined;
 

@@ -41,7 +41,7 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
     </header>
 
     {cover && (
-      <Image src={cover} alt={coverAlt ?? ''} class="post__cover" widths={[728, 1456]} sizes="(max-width: 760px) 100vw, 728px" />
+      <Image src={cover} alt={coverAlt ?? ''} class="post__cover" width={728} widths={[480, 728, 1456]} sizes="(max-width: 760px) 100vw, 728px" />
     )}
 
     <div class="prose">
