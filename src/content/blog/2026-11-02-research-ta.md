@@ -1,7 +1,7 @@
 ---
 title: "Research TA"
-date: 2026-11-02
-pillars: ["design"]
+date: 2026-10-28
+pillars: ["ux"]
 types: ["research","meeting"]
 authors: ["Bryan","Alexander","Walid"]
 ---
