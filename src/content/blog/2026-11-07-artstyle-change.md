@@ -8,4 +8,5 @@ types: ["experiment"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
+We changed our styleboards so it fits better and makes a coherent artstyle.
 ![Describe the picture](../../assets/blog/2026-11-07-artstyle-change/screenshot-2026-11-10-at-15-31-12.png)
