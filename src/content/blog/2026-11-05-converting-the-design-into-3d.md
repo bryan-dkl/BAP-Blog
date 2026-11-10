@@ -1,5 +1,5 @@
 ---
-title: "converting the design into 3D"
+title: "Converting Design Into 3D"
 date: 2026-11-05
 pillars: ["design"]
 authors: ["Alexander"]
