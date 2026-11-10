@@ -7,16 +7,13 @@ types: ["meeting"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
-Feedback:
-
-Pitchdeck tonen,
-grappige story
-hoe besturen ze de ledematen
-footplates gaan snel kapot, nog goe nadenken op welke manier we dat gaan doen (zelfde met de box dinges)
-mss kijken voor reservecontroles
-denkt ook aan speelgoed dinosaurussen ofzo als controlers misschien en kijken wat kan werken en wat ze aankunnen
+**Feedback:
+**
+Footplates gaan snel kapot, nog eens goed nadenken op welke manier we dat gaan doen (zelfde met de armhand things)
+Misschien eens kijken voor reservecontroles
+Denk ook aan speelgoed dinosaurussen,... als controllers misschien en kijken wat kan werken en wat ze aankunnen.
 Inplaats van alleen kleuren om onderscheid te maken van controlers, ook icoontjes
-pitch en form nog leveren
+pitch en form nog leveren.
 
 Source footpedals referentie:
 https://random-bazar.fr/label/hoki-doki/
