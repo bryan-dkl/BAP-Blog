@@ -2,6 +2,7 @@
 title: "Character Design Sketching"
 date: 2026-11-01
 description: "Sketching the monster for our game"
+cover: "../../assets/blog/2026-11-01-character-design-sketching/cover.jpg"
 pillars: ["design"]
 types: ["experiment"]
 authors: ["Bryan","Alexander","Walid"]
