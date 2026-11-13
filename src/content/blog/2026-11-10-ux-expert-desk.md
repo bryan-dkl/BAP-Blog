@@ -8,6 +8,7 @@ authors: ["Bryan","Alexander","Walid"]
 ---
 
 **UX feedback**
+
 Concept:
 Greybox? Gameplay testen zonder de assets zeker checken qua input en gameplay en hoe we alles in elkaar zetten enzo
 Vanuit doelgroep bekijken (vanuit research doen we dit dat) → maak er een gewoonte van en ken de doelgroep: waarom godzilla, dingen moeten niet alleen van ons komen maar ook waarom we het doen in functie van de doelgroep
