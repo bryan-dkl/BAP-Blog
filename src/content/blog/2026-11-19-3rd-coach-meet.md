@@ -7,4 +7,9 @@ types: ["meeting"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
+**Feedback**
 
+Herhaling van de client call, anders niets speciaals...
+- Als je test, best individueel want groepsdruk is zeker een ding
+- De materiaal lijst doorsturen
+- Goed checken qua sterkte van de inputs
