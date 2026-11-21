@@ -7,7 +7,7 @@ types: ["feedback"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
-**UX feedback**
+**Feedback**
 
 Concept:
 Greybox? Gameplay testen zonder de assets zeker checken qua input en gameplay en hoe we alles in elkaar zetten enzo
