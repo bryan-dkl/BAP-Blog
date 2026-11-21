@@ -4,7 +4,7 @@ date: 2026-10-28
 description: "Researching TA and see which age range to go for."
 cover: "../../assets/blog/2026-11-02-research-ta/cover.png"
 pillars: ["ux"]
-types: ["research","meeting"]
+types: ["research"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
