@@ -7,7 +7,7 @@ types: ["feedback"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
-**Design Feedback:**
+**Feedback**
 
 Contrast tussen de 2 stijlboard achtige dingen zijn wel redelijk hevig, eerste is meer zachter en andere strokes enzo en de andere meer tiener achtig en meer stroke, eerste 6-12 en andere meer 12+ ofzo
 Bekijken als font wel leesbaar anders misschien wel secondaire font misschien ook voor betere leesbaarheid + ook wel rekening houden met slechthorende kinderen misschien of slechtzient
