@@ -1,5 +1,5 @@
 ---
-title: "2nd Client Call"
+title: "2nd Call Client"
 date: 2026-11-02
 cover: "../../assets/blog/2026-11-10-2nd-client-call/cover.png"
 pillars: ["ux"]
