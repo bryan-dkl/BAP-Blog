@@ -1,5 +1,5 @@
 ---
-title: "Call Client"
+title: "4th Call Client"
 date: 2026-11-15
 cover: "../../assets/blog/2026-11-15-call-client/cover.png"
 pillars: ["development","ux","design"]
@@ -7,7 +7,7 @@ types: ["feedback"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
-**Feedback:**
+**Feedback**
 
 Voor testing: kinderen volgen meestal elkaars mening/ degene met meest uitgesproken mening, werk individueel bv. met emojis kleuren. Geen duidende vragen stellen stel ze meer gericht.
 
