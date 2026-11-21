@@ -1,12 +1,15 @@
 ---
 title: "2D Story Illustrated"
-date: 2026-11-20
+date: 2026-11-18
 description: "Finishing a drawn storyline that will play before the game starts."
 cover: "../../assets/blog/2026-11-20-2d-story-illustrated/cover.webp"
 pillars: ["design"]
 types: ["experiment"]
 authors: ["Walid"]
 ---
+
+Finishing a drawn storyline that will play before the game starts, after this the tutorial will play.
+
 
 ![Describe the picture](../../assets/blog/2026-11-20-2d-story-illustrated/illustration-84.webp)
 
