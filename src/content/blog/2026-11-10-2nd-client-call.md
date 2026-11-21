@@ -7,8 +7,8 @@ types: ["meeting"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
-**Feedback:
-**
+**Feedback**
+
 Footplates gaan snel kapot, nog eens goed nadenken op welke manier we dat gaan doen (zelfde met de armhand things)
 Misschien eens kijken voor reservecontroles
 Denk ook aan speelgoed dinosaurussen,... als controllers misschien en kijken wat kan werken en wat ze aankunnen.
