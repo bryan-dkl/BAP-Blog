@@ -2,14 +2,14 @@
 title: "1st Coach Meet"
 date: 2026-10-29
 description: "First time having a meet with our coach Frederik"
-cover: "../../assets/blog/2026-10-29-1st-coach-meet/cover.jpg"
+cover: "../../assets/blog/2026-10-29-1st-coach-meet/cover.png"
 pillars: ["ux"]
 types: ["meeting"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
-**Feedback:
-**
+**Feedback**
+
 Wat praten over het concept en ons process, hij is er vooral om te luisteren en niet zeggen als dit of dat goed of slecht is en als we op schema zijn
 Wat gebeurt er als ze erin slagen of niet?
 Waarom zou je dat monster willen helpen?
