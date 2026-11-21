@@ -19,6 +19,9 @@ Before the game starts, the players have to tell how many of them there are 2/4.
 
 ![Describe the picture](../../assets/blog/2026-11-21-designing-the-ui/screenshot-2026-11-21-at-11-50-43.png)
 
+
+
+
 **Making the UI for the gameplay**
 
 This is the screen our TA will look at while playing, it has to be readable in a split second. Food falls down four lanes toward outlines at the bottom of the screen. Each outline = one pad. I gave the lanes a bit of perspective so they follow the street and the food seems to fly out of the city at you. And that also leaves room for the health bar, progress bar, score
