@@ -10,3 +10,5 @@ authors: ["Walid"]
 ![Describe the picture](../../assets/blog/2026-11-26-illustrating-checkpoint-frames/comic-64-2.webp)
 
 ![Describe the picture](../../assets/blog/2026-11-26-illustrating-checkpoint-frames/comic-64-3.webp)
+
+![Describe the picture](../../assets/blog/2026-11-26-illustrating-checkpoint-frames/illustration-86.webp)
