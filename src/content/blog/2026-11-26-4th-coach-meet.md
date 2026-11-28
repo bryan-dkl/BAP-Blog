@@ -7,4 +7,9 @@ types: ["meeting"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
+## Feedback ##
 
+- Test sowieso nog de physical components of ze stevig genoeg zijn.
+- Op vlak van physical installation lopen we achter.
+- Maken dat we wat hebben voor volgende week, vrijdag is de testing op punten.
+- Planning + Feature list → prioriteiten stellen (risico analyse en matrix maken daarvoor → Belangrijk? Risicovol? Prioritising frameworks.)
