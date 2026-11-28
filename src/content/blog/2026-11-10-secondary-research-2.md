@@ -1,7 +1,7 @@
 ---
 title: "Secondary Research - 2"
 date: 2026-11-10
-cover: "../../assets/blog/2026-11-10-secondary-research-2/cover.png"
+cover: "../../assets/blog/2026-11-10-secondary-research-2/cover.webp"
 pillars: ["ux"]
 types: ["research"]
 authors: ["Walid"]
@@ -31,7 +31,3 @@ These findings fed straight into our design principles. We added "Fun to watch" 
 
 ### Still open ### 
 We found no good research on how 9-12-year-olds handle failing in front of friends, or which games specifically Flemish kids this age play most.
-
-
-
-![Describe the picture](../../assets/blog/2026-11-10-secondary-research-2/screenshot-2026-11-28-at-10-38-14.png)
