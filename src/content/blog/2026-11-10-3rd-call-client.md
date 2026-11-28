@@ -1,9 +1,9 @@
 ---
 title: "3rd Call Client"
 date: 2026-11-10
-cover: "../../assets/blog/2026-11-10-3rd-call-client/cover.png"
+cover: "../../assets/blog/2026-11-10-3rd-call-client/cover.webp"
 pillars: ["ux"]
-types: ["meeting"]
+types: ["feedback"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
