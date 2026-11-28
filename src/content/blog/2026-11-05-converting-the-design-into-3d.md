@@ -1,6 +1,7 @@
 ---
 title: "Converting Design Into 3D"
 date: 2026-11-05
+cover: "../../assets/blog/2026-11-05-converting-the-design-into-3d/cover.webp"
 pillars: ["design"]
 authors: ["Alexander"]
 ---
