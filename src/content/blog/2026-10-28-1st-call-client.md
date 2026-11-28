@@ -1,10 +1,10 @@
 ---
 title: "1st Call Client"
 date: 2026-10-28
-description: "Introducing ourselves and explaining our first concept we came up with: Monster Run"
-cover: "../../assets/blog/2026-10-28-1st-call-client/cover.png"
-pillars: ["ux"]
-types: ["meeting"]
+description: "Introducing ourselves and explaining our first concept"
+cover: "../../assets/blog/2026-10-28-1st-call-client/cover.webp"
+pillars: ["development","ux","design"]
+types: ["feedback"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
