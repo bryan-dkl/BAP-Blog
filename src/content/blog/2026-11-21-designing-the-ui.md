@@ -1,7 +1,7 @@
 ---
 title: "Designing the UI"
 date: 2026-11-21
-description: "UI design"
+description: "Game flow, Game UI, Gameplay UI"
 cover: "../../assets/blog/2026-11-21-designing-the-ui/cover.png"
 pillars: ["ux","design"]
 types: ["experiment"]
