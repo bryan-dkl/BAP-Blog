@@ -1,9 +1,9 @@
 ---
 title: "2nd Call Client"
 date: 2026-11-02
-cover: "../../assets/blog/2026-11-10-2nd-client-call/cover.png"
-pillars: ["ux"]
-types: ["meeting"]
+cover: "../../assets/blog/2026-11-10-2nd-client-call/cover.webp"
+pillars: ["development","ux","design"]
+types: ["feedback"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
