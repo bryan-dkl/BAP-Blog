@@ -1,9 +1,8 @@
 ---
 title: "1st Coach Meet"
 date: 2026-10-29
-description: "First time having a meet with our coach Frederik"
 cover: "../../assets/blog/2026-10-29-1st-coach-meet/cover.png"
-pillars: ["ux"]
+pillars: ["development","ux","design"]
 types: ["meeting"]
 authors: ["Bryan","Alexander","Walid"]
 ---
