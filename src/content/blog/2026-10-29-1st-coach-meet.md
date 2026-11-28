@@ -1,13 +1,13 @@
 ---
 title: "1st Coach Meet"
 date: 2026-10-29
-cover: "../../assets/blog/2026-10-29-1st-coach-meet/cover.png"
+cover: "../../assets/blog/2026-10-29-1st-coach-meet/cover-2.jpg"
 pillars: ["development","ux","design"]
 types: ["meeting"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
-**Feedback**
+## Feedback ##
 
 Wat praten over het concept en ons process, hij is er vooral om te luisteren en niet zeggen als dit of dat goed of slecht is en als we op schema zijn
 Wat gebeurt er als ze erin slagen of niet?
