@@ -1,13 +1,13 @@
 ---
 title: "3rd Coach Meet"
 date: 2026-11-19
-cover: "../../assets/blog/2026-11-19-3rd-coach-meet/cover.png"
+cover: "../../assets/blog/2026-11-19-3rd-coach-meet/cover.jpg"
 pillars: ["development","ux","design"]
 types: ["meeting"]
 authors: ["Bryan","Alexander","Walid"]
 ---
 
-**Feedback**
+## Feedback ##
 
 Herhaling van de client call, anders niets speciaals...
 - Als je test, best individueel want groepsdruk is zeker een ding
