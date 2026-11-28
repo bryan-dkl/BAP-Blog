@@ -1,7 +1,7 @@
 ---
 title: "4th Call Client"
 date: 2026-11-15
-cover: "../../assets/blog/2026-11-15-call-client/cover.png"
+cover: "../../assets/blog/2026-11-15-call-client/cover.webp"
 pillars: ["development","ux","design"]
 types: ["feedback"]
 authors: ["Bryan","Alexander","Walid"]
