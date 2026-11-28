@@ -1,6 +1,6 @@
 ---
 title: "Painpoints & Needs of TA"
-date: 2026-11-16
+date: 2026-11-15
 cover: "../../assets/blog/2026-11-16-painpoints-needs-of-ta/cover.png"
 pillars: ["ux"]
 types: ["research"]
